@@ -1,4 +1,5 @@
 #include "mpc/mpc.h"
+#include "lval.h"
 
 /*Fake functions for readline and add_history on Windows.*/
 #ifdef _WIN32
@@ -28,39 +29,29 @@ void add_history(char* unused){}
 #include <edit/readline/history.h>
 #endif
 
-/*Enums of possible lval.*/
-enum{LVAL_NUM, LVAL_ERR};
 
-/*Enum for posible error types.*/
-enum {LERR_DIV_ZERO,LERR_BAD_OP,LERR_BAD_NUM};
-
-
-
-/*Struct for lval*/
-typedef struct {
-	int type;
-	float num;
-	int err;
-} lval;
-
-
-float eval_op(float x, char* op, float y)
+lval eval_op(lval x, char* op, lval y)
 {
 	
 	/**/
-	if {x.type == LVAL_ERR} return x;}
-	if {y.type == LVAL_ERR} return y;}
+	if (x.type == LVAL_ERR){ return x;}
+	if (y.type == LVAL_ERR) {return y;}
 
 
-	if(strcmp(op, "+")==0) {return x+y;}
-	if(strcmp(op, "-")==0) {return x-y;}
-	if(strcmp(op, "*")==0) {return x*y;}
-	if(strcmp(op, "/")==0) {return x/y;}
-//	if(strcmp(op, "%")==0) {return x%y;} 
+	if(strcmp(op, "+")==0) {return lval_num(x.num + y.num);}
+	if(strcmp(op, "-")==0) {return lval_num(x.num-y.num);}
+	if(strcmp(op, "*")==0) {return lval_num(x.num * y.num);}
+	if(strcmp(op, "/")==0) {
+		return y.num == 0
+		? lval_err(LERR_DIV_ZERO)
+		: lval_num(x.num / y.num);
+	}
 	
-return 0;
+	
+return lval_err(LERR_BAD_OP);
 
 }
+
 
 float eval(mpc_ast_t* t)
 {
@@ -85,57 +76,7 @@ return x;
 }
 
 
-/*Create a new number lval type*/
-lval lval_num(float x)
-{
-	lval v;
-	v.type = LVAL_NUM;
-	v.num = x;
-	return v;
-}
 
-/*Create a new error type lval*/
-
-lval lval_err(int x)
-{
-	lval v;
-	v.type = LVAL_ERR;
-	v.err = x;
-	return v;
-}
-
-/*Print lvals*/
-void lval_print(lval v)
-{
-	switch(v.type)
-	{
-	case LVAL_NUM: printf("%f",v.num); break;
-	case LVAL_ERR:
-		       if (v.err == LERR_DIV_ZERO)
-		       {
-			       printf("Error: Divsion By Zero!");
-		       }
-		       if(v.err == LERR_BAD_OP)
-		       {
-			       printf("Error: Invalid Operator!");
-		       }
-
-		      if(v.err == LERR_BAD_NUM)
-		      {
-			      printf("Error: Invalid Number!");
-		      }
-		break;	
-	}	
-}
-
-
-/*Print lval with newline*/
-
-void lval_println(lval v)
-{
-	lval_print(v);
-	putchar('\n');
-}
 
 int main(int argc, char** argv)
 {
