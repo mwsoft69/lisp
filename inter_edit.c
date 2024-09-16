@@ -19,6 +19,10 @@ char* readline(char* prompt){
 /*Fake add_hisory()*/
 void add_history(char* unused){}
 
+#elif __linux__
+#include <readline/readline.h>
+#include <readline/history.h>
+
 #else
 #include <edit/readline/readline.h>
 #include <edit/readline/history.h>
