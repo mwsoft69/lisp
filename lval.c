@@ -2,23 +2,26 @@
 #include "lval.h"
 
 /*Create a new number lval type*/
-lval lval_num(float x)
+lval* lval_num(float x)
 {
-	lval v;
-	v.type = LVAL_NUM;
-	v.num = x;
+	lval* v = malloc(sizeof(lval));
+	v->type = LVAL_NUM;
+	v->num = x;
 	return v;
 }
 
 /*Create a new error type lval*/
 
-lval lval_err(int x)
+lval lval_err(char* m)
 {
-	lval v;
-	v.type = LVAL_ERR;
-	v.err = x;
+	lval* v = malloc(sizeof(lval));
+	v->type = LVAL_ERR;
+	v->err = malloc(strln(m)+1);
+	strcpy(v->err,m);
 	return v;
 }
+
+
 
 /*Print lvals*/
 void lval_print(lval v)
