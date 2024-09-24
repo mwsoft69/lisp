@@ -60,7 +60,9 @@ lval eval(mpc_ast_t* t)
 		errno = 0;
 		float x = strtof(t->contents,NULL);
 		return errno != ERANGE ? lval_num(x) : lval_err(LERR_BAD_NUM);
-	}	
+	}
+	
+	
 
 	char* op = t->children[1]->contents;
 	
@@ -86,7 +88,8 @@ int main(int argc, char** argv)
 	/*Create some parsers.*/
 	
 	mpc_parser_t* Number = mpc_new("number");
-	mpc_parser_t* Operator = mpc_new("operator");
+	mpc_parser_t* Symbol = mpc_new("symbol");
+	mpc_parser_t* Sexpr = mpc_new("sexpr");
 	mpc_parser_t* Expr = mpc_new("expr");
 	mpc_parser_t* Lisp = mpc_new("lisp");
 
@@ -94,11 +97,12 @@ int main(int argc, char** argv)
   mpca_lang(MPCA_LANG_DEFAULT,
     "                                                      \
       number   : /-?(([0-9]*[.])?[0-9]+([.][0-9]*)?)/;     \
-      operator : '+' | '-' | '*' | '/' | '%'  ;            \
+      symbol : '+' | '-' | '*' | '/' | '%'  ;            \
+	sexpr : '(' <expr>* ')';                        \
       expr     : <number> | '(' <operator> <expr>+ ')' ;   \
       lisp     : /^/ <operator> <expr>+ /$/ ;              \
     ",
-    Number, Operator, Expr, Lisp);
+    Number, Symbol, Sexpr,Expr, Lisp);
 
 
 	char* version = "0.0.3";
@@ -122,11 +126,20 @@ int main(int argc, char** argv)
 			mpc_ast_delete(r.output);
 		}
 		
+		/*Keep for testing*/
+		else
+		{    
+			mpc_err_print(r.error);
+			mpc_err_delete(r.error);
+		}
+    
+		
+		
 		
 		free(input);
 	}
 	
-	mpc_cleanup(4,Number,Operator,Expr,Lisp);
+	mpc_cleanup(5,Number,Symbol,Expr,Sexpr,Lisp);
 
 	return 0;
 }
