@@ -22,8 +22,8 @@ typedef struct {
 } lval;
 
 
-lval lval_num(float x);
-lval lval_err(int x);
+lval* lval_num(float x);
+lval* lval_err(int x);
 void lval_print(lval v);
 void lval_println(lval v);
 

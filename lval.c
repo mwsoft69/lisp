@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "lval.h"
 
 /*Create a new number lval type*/
